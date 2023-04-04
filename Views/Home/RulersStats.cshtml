@@ -1,0 +1,82 @@
+﻿@model List<Ruler>
+
+<div class="sidenav">
+    <form method="get">
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Инфо/Связь" asp-action="InfoNContact" asp-controller="Home" />
+    </form>
+    <form method="get">
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Предложения" asp-controller="Offers" asp-action="Index" />
+    </form>
+</div>
+
+<center>
+
+    @{
+        <h1>Узнаваемость правителей:</h1> <br /> <br />
+
+        <form method="post">
+            <div style="font-size:18pt">
+
+                <input type="text" style="border-radius:5px;width:642px;font-weight:bold" placeholder="Поиск" name="searchString" />
+                <input type="submit" style="background-color:green;color:white;border-radius:5px;width:214px;font-weight:bold" value="Найти" /> <br />
+
+                <select class="sortselect" name="sortParameter" style="margin:20px 0 20px 0">
+                    <option value="name">Название</option>
+                    <option value="displayed">Количество показов</option>
+                    <option value="guessed">Верно угадано</option>
+                    <option value="percent">Верно угадано, %</option>
+                </select>
+            </div>
+        </form>
+        <br />
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Правитель:</th>
+                    <th>Показан, раз</th>
+                    <th>Угадан, раз</th>
+                    <th>Угадан, %</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (var ruler in Model)
+                    {
+                        <tr>
+                            <td>@(char.ToUpper(ruler.RightAnswers.Split("/")[0][0]) + ruler.RightAnswers.Split("/")[0].Substring(1))</td>
+                            <td>@ruler.TimesDisplayed</td>
+                            <td>@ruler.TimesGuessed</td>
+                            @if (ruler.TimesDisplayed == 0)
+                            {
+                                <td>0</td>
+                            }
+                            else
+                            {
+                                double percent = Math.Round((double)((ruler.TimesGuessed * 100) / ruler.TimesDisplayed), 2);
+                                if (percent >= 0 && percent <= 30)
+                                {
+                                    <td style="color:red;font-weight:bold">@percent</td>
+                                }
+                                else if (percent >= 31 && percent <= 70)
+                                {
+                                    <td style="color:orange;font-weight:bold">@percent</td>
+                                }
+                                else if (percent >= 71 && percent <= 100)
+                                {
+                                    <td style="color:green;font-weight:bold">@percent</td>
+                                }
+                                else
+                                {
+                                    <td>@percent</td>
+                                }
+                            }
+                        </tr>
+
+                    }
+                }
+            </tbody>
+        </table>
+    }
+
+</center>

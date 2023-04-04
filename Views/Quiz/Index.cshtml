@@ -1,0 +1,46 @@
+﻿<div style="font-family:'Century Gothic'">
+
+    <div>
+
+            <form method="post" asp-action="GetToPrevQuestion">
+
+                <input style="background-color:cornflowerblue;color:white;font-size:22pt;border-radius:5px;margin:0 0 8px 2px"
+                   type="submit" value="Назад" />
+
+            </form>
+
+            <div >
+
+                <img src="@QuizState.PhotoUrls.ToList()[QuizState.CurrentQuestionIndex]" oncontextmenu="return false"
+                     style="width:780px;height:440px;border:solid;border-color:black;" /> <br />
+
+                <p style="font-size:22pt">Текущий вопрос: @(QuizState.CurrentQuestionIndex+1) / 10</p>
+
+            </div>
+            
+            <form method="post">
+
+                <br /> <br />
+
+                <input style="font-size:22pt;border-radius:5px"
+                    type="text" placeholder="Введите ответ" autocomplete="off" autofocus name="answer" required />
+
+            <input class="quizsubmitbutton" type="submit" value="Ответить" asp-action="Index" />
+
+            </form>
+
+            <script>
+                anime({
+                targets: '.quizsubmitbutton',
+                    translateX: 30,
+                    direction: 'alternate',
+                    easing: 'easeInOutSine',
+                    duration: 250,
+                });
+            </script>
+
+    </div>
+
+</div>
+
+

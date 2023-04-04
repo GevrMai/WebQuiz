@@ -1,0 +1,116 @@
+﻿@model List<Result>?
+
+<div style="font-family:'Century Gothic'">
+    @{
+        if (CurrentUser._CurrentUser != null)
+        {
+            <h1>Текущий пользователь:    @CurrentUser._CurrentUser.Name</h1>
+
+            <br/>
+
+            <p style="font-weight:bold">@ViewBag.ErrorMessage</p>
+
+            <form method="post">
+
+                <button class="changePass" type="button" style="background-color:cornflowerblue;color:white;font-size:12pt" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    Сменить пароль
+                </button>
+
+                <script>
+                    anime({
+                        targets: '.changePass',
+                        width: 200,
+                        borderRadius: '5pt',
+                        fontSize: '17px',
+                        delay: 280,
+                    });
+                </script>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Смена пароля</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form method="post" asp-action="ChangePassword" asp-controller="Account">
+                                <div class="modal-body" style="font-size:16pt">
+                                    <input style="width:350px" type="password" name="newPassword" placeholder="Введите новый пароль" /> <br/>
+                                    <input style="width:350px;margin:15px 0 0 0" type="password" name="newPasswordConfirm" placeholder="Подтвердите пароль" /> <br /> <br>
+                                    <input type="submit" class="sidebutton" value="Сохранить" asp-action="ChangePassword"/>
+                                </div>
+                            </form>
+                                
+                        </div>
+                    </div>
+                </div>
+
+
+            </form>
+
+
+            
+
+            <br />
+
+            <form method="post" asp-action="SignOut" asp-controller="Account">
+
+                <input class="signOut" style="font-size:16pt;color:crimson" type="submit" value="Выйти из аккаунта" />
+
+                <script>
+                    anime({
+                        targets: '.signOut',
+                        width: 300,
+                        borderRadius: '5pt',
+                        fontSize: '24px',
+                        delay: 280,
+                    });
+                </script>
+
+            </form>
+
+            <hr style="width:50%;border:medium" />
+
+            <br />
+            <h2>Ваши результаты: </h2> <br />
+
+            if (Model.Count == 0)
+            {
+                    <h2>У вас еще нет ответов!</h2>
+            }
+            else
+            {
+                <div>
+                    <label class="sidebutton" style="font-weight:bold;width:350px;height:40pt;text-align:center;font-size:19pt">Верных ответов: @AverageMetrics.AverageUserCorrectAnswers</label>
+                    <label class="sidebutton" style="font-weight:bold;width:350px;height:40pt;text-align:center;font-size:19pt">Время ответа: @AverageMetrics.AverageUserTime</label>
+                    <label class="sidebutton" style="font-weight:bold;width:350px;height:40pt;text-align:center;font-size:19pt">Очков на ответ: @AverageMetrics.AverageUserPoints</label> <br />
+                </div> <br />
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Пользователь</th>
+                            <th>Дано верных ответов</th>
+                            <th>Очков</th>
+                            <th>Время</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                        foreach (var result in Model)
+                        {
+                            <tr>
+                                <td>@result.UserName</td>
+                                <td>@result.CorrectAnswers</td>
+                                <td>@result.Points</td>
+                                <td>@result.Time</td>
+                            </tr>
+                        }
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+    }
+</div>

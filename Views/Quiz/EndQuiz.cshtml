@@ -1,0 +1,120 @@
+﻿<div style="font-family:'Century Gothic';position:absolute;left:70%">
+    @{
+        for (int i = 0; i < 10; i++)
+        {
+            if (@QuizState._UserAnswers[i].IsCorrect == true)
+            {
+                <div class="correctAns" style="background-color:gray;width:60px;height:60px;margin:5px 0 0 0;border-radius:50%;color:white">
+                    <b style="position:absolute;left:40%;top:30%">@(i + 1)</b>
+                </div>
+            }
+            else
+            {
+                <div class="incorrectAns" style="background-color:gray;width:60px;height:60px;margin:5px 0 0 0;border-radius:50%;color:white">
+                    <b style ="position:absolute;left:40%;top:30%">@(i + 1)</b>
+                </div>
+            }
+        }
+    }
+        
+    <script>
+        const transY = 20;
+        var elements = document.querySelectorAll('correctAns');
+        anime({
+            targets: '.correctAns',
+            translateX: -200,
+            translateY: transY,
+            delay: anime.stagger(500),
+            backgroundColor: '#228515',
+        });
+    </script>
+    <script>
+        var elements = document.querySelectorAll('correctAns');
+        anime({
+            targets: '.incorrectAns',
+            translateX: -200,
+            translateY: transY,
+            delay: anime.stagger(500),
+            backgroundColor: '#a3071e',
+        });
+    </script>
+
+</div>
+
+
+<div style="font-family:'Century Gothic'">
+
+    
+
+    <h1><p style="color:cornflowerblue">@CurrentUser._CurrentUser.Name!</p>Викторина пройдена!</h1>
+    <hr style="width:45%;border-width:2pt" /> <br />
+
+    <h2>Верно решено заданий: @QuizState.CorrectAnswers / 10</h2>
+    
+    <h2 class="points">Получено баллов: @QuizState.Points</h2>
+
+    @{
+        if(QuizState.TotalTime.Hours == 0)
+        {
+            if (QuizState.TotalTime.Seconds < 10)
+            {
+                string time = @QuizState.TotalTime.Minutes.ToString() + ":0" + @QuizState.TotalTime.Seconds.ToString();
+                        <h2>Затрачено времени: @time</h2> <br />
+            } 
+            else
+            {
+                        <h2>Затрачено времени: @QuizState.TotalTime.Minutes:@QuizState.TotalTime.Seconds</h2> <br />
+            }
+        }
+        else
+        {
+                    <h2>Похоже, было затрачено очень много времени...</h2> <br />
+        }
+
+                <hr style="width:45%;border-width:2pt" /> <br />
+
+                <h1>Ваши ответы:</h1> <br/>
+
+        for(int i = 0; i < 10; i++)
+        {
+                        <h3>
+                            Вопрос <b>@(i+1)</b>.
+                            Ваш ответ: <b style="color:cornflowerblue">@QuizState._UserAnswers[i].UserAnswer</b>. &nbsp;&nbsp;
+                            @if (@QuizState._UserAnswers[i].IsCorrect == true)
+                {
+                                <p style="color:green"><b>Результат: верно.</b></p>
+                }
+                else
+                {
+                                <p style="color:red"><b>Результат: неверно.</b></p>
+                }
+                            <img src="@QuizState.PhotoUrls.ToList()[i]" style="width:240px;height:135px;border:solid;border-color:black;" />
+                        </h3>
+
+                        <hr style="width:35%;border-width:3pt;border-color:black" /> <br />
+        }
+    }
+
+    <form method="post" asp-action="ToHome" asp-controller="Quiz">
+
+        <input type="submit" value="Вернуться на главную" style="font-size:26pt;background-color:cornflowerblue;border-radius:5px" />
+
+    </form>
+
+
+
+<script>
+    const animNums = document.querySelectorAll('.points');
+    animNums.forEach((number) => {
+        anime({
+            round: 10,
+            targets: number,
+            textContent: [0, number.textContent],
+            easing: 'linear',
+            duration: 1500,
+        });
+    });
+</script>
+
+
+    

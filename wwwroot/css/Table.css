@@ -1,0 +1,30 @@
+﻿table {
+    border-collapse: separate;
+    font-family: 'Century Gothic', sans-serif;
+    font-size: 26px;
+    width:1062px;
+    text-align:center
+}
+
+th {
+    color:white;
+    background-color: cornflowerblue;
+    border-radius:5px;
+    border-width:2px;
+    font-weight: bold;
+}
+
+td, th {
+    border-width:2px;
+    border-radius:5px;
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: skyblue;
+}
+
+tr:hover {
+    background-color: wheat;
+}

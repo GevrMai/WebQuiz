@@ -1,0 +1,90 @@
+﻿@model List<User>
+
+<div class="sidenav">
+
+    <form method="get">
+
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Пользователи"
+        asp-action="AdminPage" asp-controller="Index" />
+
+    </form>
+
+    <form method="get">
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Страны"
+               asp-controller="AdminPage" asp-action="Countries" />
+
+    </form>
+
+    <form method="get">
+
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Правители"
+               asp-controller="AdminPage" asp-action="Rulers" />
+
+    </form>
+
+</div>
+
+<center>
+
+    <h1>Управление пользователями:</h1> <br /> <br/>
+
+    <form method="post">
+
+        <div style="font-size:18pt">
+
+            <input type="text" style="border-radius:5px;width:642px;font-weight:bold" placeholder="Поиск" name="searchString" />
+            <input type="submit" style="background-color:green;color:white;border-radius:5px;width:214px;font-weight:bold" value="Найти" /> <br /> <br /> <br/>
+
+        </div>
+
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Пользователь</th>
+                <th>Роль</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (var user in Model)
+                {
+                    <tr>
+
+                        <td>@user.Name</td>
+
+                        @if (user.RoleId == 0)
+                        {
+                            <td>пользователь</td>
+                            <td>
+                                <form method="post" asp-action="AppointModerator">
+                                    <input type="hidden" value="@user.Id" name="userId" />
+                                    <input value="назначить модератором" class="sidebutton" style="font-size:12pt" type="submit" />
+                                </form>
+                            </td>
+                        }
+                        else if (user.RoleId == 1)
+                        {
+                            <td>модератор</td>
+                            <td>
+                                <form method="post" asp-action="RemoveModerator">
+                                    <input type="hidden" value="@user.Id" name="userId"/>
+                                    <input value="снять с должности модератора" class="sidebutton"
+                                   style="font-size:12pt;background-color:crimson" type="submit" />
+                                </form>
+                            </td>
+                        }
+                        else if (user.RoleId == 2)
+                        {
+                            <td style="font-weight:bold">главный админ</td>
+                            <td style="font-weight:bold">действия недоступны</td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</center>

@@ -1,0 +1,76 @@
+﻿@model List<Offer>
+
+<link rel="stylesheet" href="~/css/OfferStyle.css" />
+
+@{
+    if (CurrentUser._CurrentUser == null)
+    {
+        <h1 style="color:red">Необходимо выполнить вход, чтобы оставить здесь свое предложение</h1>
+    }
+    else
+    {
+        <h1><p style="color:cornflowerblue">@CurrentUser._CurrentUser.Name!</p>Вы можете оставить здесь свое предложение:</h1> 
+    }
+}
+
+<form method="post" asp-action="Index">
+
+    <br />
+
+    <textarea maxlength="1000" required name="offerField" style="width:80%;border:groove 2px cornflowerblue;
+                                border-radius:5px;height:300px;resize:none;font-size:20pt">
+
+    </textarea> <br /> <br />
+
+    <input type="submit"
+        style="font-size:18pt;background-color:cornflowerblue;color:white;height:40pt;width:130px;border-radius:2%"
+        value="Отправить" class="sendOffer"/> <br /> <br />
+
+    <script>
+        anime({
+            targets: '.sendOffer',
+            delay: 280,
+            width: 300,
+            borderRadius: '7pt',
+            fontSize: '26px'
+        });
+    </script>
+
+</form>
+
+@{
+    if (Model.Count == 0)
+    {
+    <h2>Список предложений пуст. Будьте первыми!</h2>
+    }
+    else
+    {
+        for(int i = 0; i < Model.Count(); i++)
+        {
+            <!-- 1, 2 - админы, им полагается корона -->
+            if (ViewBag.UserRoles[i] > 0)
+            {
+                <b style="font-size:24pt;color:cornflowerblue">👑 @Model[i].UserName 👑</b>
+            }
+            else
+            {
+                <b style="font-size:24pt;color:cornflowerblue">@Model[i].UserName</b>
+            }
+
+            <p style="font-size:20pt;">@Model[i].CreatedDate</p>
+            <p style="font-size:20pt;">@Model[i].OfferText</p>
+            if (CurrentUser._CurrentUser != null && CurrentUser._CurrentUser.RoleId > 0)
+            {
+                <form method="post" asp-action="DeleteOffer">
+
+                    <input type="hidden" name="offerId" value="@Model[i].Id" />
+                    <input class="sidebutton" style="background-color:crimson;font-size:16pt" type="submit" value="🗑️ Удалить" />
+
+                </form>
+
+            }
+            <hr style="width:50%;color:gray" />
+            <br />
+        }
+    }
+}

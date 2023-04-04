@@ -1,0 +1,98 @@
+﻿@model List<Result>?
+
+
+
+<div style="font-family:'Century Gothic'">
+
+    <div style="">
+
+        <div class="sidenav">
+            <form method="get">
+                <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Инфо/Связь" asp-action="InfoNContact" asp-controller="Home"/>
+            </form>
+            <form method="get">
+                <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Предложения" asp-controller="Offers" asp-action="Index" />
+            </form>
+        </div>
+
+        <center>
+
+            <h4 style="font-size:30pt;color:red">@ViewBag.ErrorMessage</h4>
+
+            <img src="https://st.overclockers.ru/images/lab/2017/04/04/1/atlant_big.jpg"
+                 style="width:864px;height:486px" />
+
+            <br /> <br /><h1>Выберите тип викторины:</h1> <br /> <br />
+
+            <form method="post">
+
+                <input style="background-color:green;color:white;font-size:22pt;border-radius:5px" class="flags"
+                       type="submit" value="Флаги" asp-action="Flags" />
+
+                <input style="background-color:green;color:white;font-size:22pt;border-radius:5px;margin:0 0 0 10px"
+                       type="submit" value="Границы" asp-action="Borders" />
+
+                <input style="background-color:green;color:white;font-size:22pt;border-radius:5px;margin:0 0 0 10px" class="rulers"
+                       type="submit" value="Правители" asp-action="Rulers" asp-controller="Home" />
+
+            </form>
+
+            <script>
+                anime({
+                    targets: '.flags',
+                    translateX: -80,
+                    direction: 'alternate',
+                    easing: 'easeInOutSine',
+                    duration: 400,
+                    delay: 250,
+                });
+                anime({
+                    targets: '.rulers',
+                    translateX: 80,
+                    direction: 'alternate',
+                    easing: 'easeInOutSine',
+                    duration: 400,
+                    delay: 250,
+                });
+            </script>
+
+            @{
+                <br /> <br /> <br />
+                <h2>Топ-10 ответов пользователей:</h2> <br /> <br />
+
+                if(Model.Count < 10) { <h2>Ответов пользователей мало, Вы можете легко попасть в топ!</h2> }
+                else
+                {
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Пользователь</th>
+                                <th>Дано верных ответов</th>
+                                <th>Очков</th>
+                                <th>Время</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                foreach (var result in Model)
+                                {
+                                    <tr>
+                                        <td>@result.UserName</td>
+                                        <td>@result.CorrectAnswers</td>
+                                        <td>@result.Points</td>
+                                        <td>@result.Time</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            }
+        </center>
+
+    </div>
+
+</div>
+
+
+

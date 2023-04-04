@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - WebQuiz</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Table.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Select.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/SideBar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/QuizSubmitButton.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/WebQuiz.styles.css" asp-append-version="true" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"
+            integrity="sha512-z4OUqw38qNLpn1libAN9BsoDx6nbNFio5lA6CuTp9NlK83b89hgyCVq+N5FdBJptINztxn1Z3SaKSKUS5UP60Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer">
+    </script>
+
+</head>
+<body style="font-family:'Century Gothic'">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebQuiz</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" style="font-size:17pt" asp-area="" asp-controller="Home" asp-action="Index"><b>Главная</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" style="font-size:17pt" asp-area="" asp-controller="Home" asp-action="Statistics"><b>Результаты</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" style="font-size:17pt" asp-area="" asp-controller="Home" asp-action="Players"><b>Игроки</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" style="font-size:17pt" asp-area="" asp-controller="Home" asp-action="CountriesStats"><b>Страны</b></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" style="font-size:17pt" asp-area="" asp-controller="Home" asp-action="RulersStats"><b>Правители</b></a>
+                        </li>
+                    </ul>
+                </div>
+                @{
+                    if(CurrentUser._CurrentUser == null)
+                    {
+                        <div class="row justify-content-end">
+                            <a class="nav-link text-info" style="font-size:17pt" asp-area="" asp-controller="SignIn" asp-action="Index"><b>Вход</b></a>
+                        </div>
+
+                        <div class="row justify-content-end" style="margin:0 0 0 5pt">
+                            <a class="nav-link text-black" style="font-size:17pt" asp-area="" asp-controller="Register" asp-action="Index"><b>Регистрация</b></a>
+                        </div>
+                    }
+                    else
+                    {
+                        if(CurrentUser._CurrentUser.RoleId == 2)
+                        {
+                            <div class="row justify-content-end" style="margin:0 20px 0 0">
+                                <a class="nav-link text-warning" style="font-size:17pt" asp-area="" asp-controller="AdminPage"
+                                asp-action="Index"><b>Управление</b></a>
+                            </div>
+                        }
+                        <div class="row justify-content-end">
+                            <a class="nav-link text-info" style="font-size:17pt" asp-area="" asp-controller="Account" asp-action="Index"><b>@CurrentUser._CurrentUser.Name</b></a>
+                        </div>
+                    }
+                }
+                
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2023 - WebQuiz
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

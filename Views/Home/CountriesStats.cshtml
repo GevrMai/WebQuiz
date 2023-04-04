@@ -1,0 +1,79 @@
+﻿@model List<Country>
+
+<div class="sidenav">
+    <form method="get">
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Инфо/Связь" asp-action="InfoNContact" asp-controller="Home" />
+    </form>
+    <form method="get">
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Предложения" asp-controller="Offers" asp-action="Index" />
+    </form>
+</div>
+
+<center>
+
+    @{
+        <h1>Узнаваемость стран:</h1> <br /> <br />
+
+        <form method="post">
+            <div style="font-size:18pt">
+
+                <input type="text" style="border-radius:5px;width:642px;font-weight:bold" placeholder="Поиск" name="searchString" />
+                <input type="submit" style="background-color:green;color:white;border-radius:5px;width:214px;font-weight:bold" value="Найти" /> <br />
+
+                <select class="sortselect" name="sortParameter" style="margin:20px 0 20px 0">
+                    <option value="name">Название</option>
+                    <option value="displayed">Количество показов</option>
+                    <option value="guessed">Верно угадано</option>
+                    <option value="percent">Верно угадано, %</option>
+                </select>
+            </div>
+        </form>
+        <br />
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Страна(регион):</th>
+                    <th>Показана, раз</th>
+                    <th>Угадана, раз</th>
+                    <th>Угадана, %</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (var country in Model)
+                    {
+                        <tr>
+                            <td>@(char.ToUpper(country.RightAnswers.Split("/")[0][0]) + country.RightAnswers.Split("/")[0].Substring(1))</td>
+                            <td>@country.TimesDisplayed</td>
+                            <td>@country.TimesGuessed</td>
+                            @if(country.TimesDisplayed == 0)
+                            {
+                                <td>0</td>
+                            }
+                            else
+                            {
+                                double percent = Math.Round((double)((country.TimesGuessed * 100) / country.TimesDisplayed), 2);
+                                if(percent >= 0 && percent <= 30)
+                                {
+                                    <td style="color:red;font-weight:bold">@percent</td>
+                                }
+                                else if (percent >= 31 && percent <= 70)
+                                {
+                                    <td style="color:orange;font-weight:bold">@percent</td>
+                                }
+                                else if (percent >= 71 && percent <= 100)
+                                {
+                                    <td style="color:green;font-weight:bold">@percent</td>
+                                }
+                                else { <td>@percent</td> }
+                            }
+                        </tr>
+
+                    }   
+                }
+            </tbody>
+        </table>
+    }
+
+</center>

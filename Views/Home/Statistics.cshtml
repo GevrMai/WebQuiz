@@ -1,0 +1,80 @@
+﻿@model List<Result>?
+
+<div class="sidenav">
+    <form method="get">
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Инфо/Связь" asp-action="InfoNContact" asp-controller="Home" />
+    </form>
+    <form method="get">
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Предложения" asp-controller="Offers" asp-action="Index" />
+    </form>
+</div>
+
+<center>
+
+@{
+    <h1>Все ответы пользователей:</h1> <br /> <br />
+
+    if (Model.Count == 0)
+    {
+            <h2>Ответов пользователей пока нет</h2>
+    }
+    else
+    {   
+        <div>
+            <label class="sidebutton" style="font-weight:bold;width:283px;height:40pt;text-align:center;font-size:19pt">Верных ответов: @AverageMetrics.AverageCorrectAnswers</label>
+            <label class="sidebutton" style="font-weight:bold;width:283px;height:40pt;text-align:center;font-size:19pt">Время ответа: @AverageMetrics.AverageTime</label>
+            <label class="sidebutton" style="font-weight:bold;width:283px;height:40pt;text-align:center;font-size:19pt">Очков на ответ: @AverageMetrics.AveragePoints</label> <br />
+        </div> <br />
+
+        <form method="post">
+            <div style="font-size:18pt">
+
+                <input type="text" style="border-radius:5px;width:642px;font-weight:bold" placeholder="Поиск" name="searchString" />
+                <input type="submit" style="background-color:green;color:white;border-radius:5px;width:214px;font-weight:bold" value="Найти" /> <br />
+
+                <select class="sortselect" name="firstSortParameter" style="margin:20px 0 20px 0">
+                    <option value="points">Количество очков</option>
+                    <option value="correctAnswers">Верные ответы</option>
+                    <option value="user">Имя пользователя</option>
+                    <option value="time">Время</option>
+                </select>
+
+
+                <select class="sortselect" name="secondSortParameter" style="margin:20px 0 20px 6px">
+                    <option value="none">Без второго параметра</option>
+                    <option value="points">Количество очков</option>
+                    <option value="time">Время</option>
+                    <option value="user">Имя пользователя</option>
+                    <option value="correctAnswers">Верные ответы</option>
+                </select> <br/>
+            </div>
+        </form>
+        <br />
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Пользователь</th>
+                    <th>Дано верных ответов</th>
+                    <th>Очков</th>
+                    <th>Время</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                foreach (var result in Model)
+                {
+                    <tr>
+                        <td>@result.UserName</td>
+                        <td>@result.CorrectAnswers</td>
+                        <td>@result.Points</td>
+                        <td>@result.Time</td>
+                    </tr>
+                }
+                }
+            </tbody>
+        </table>
+    }
+}
+
+</center>

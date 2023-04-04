@@ -1,0 +1,78 @@
+﻿@model List<UserRating>
+
+<div class="sidenav">
+    <form method="get">
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Инфо/Связь" asp-action="InfoNContact" asp-controller="Home" />
+    </form>
+    <form method="get">
+        <input type="submit" class="sidebutton" style="margin:5px 5px 5px 10px" value="Предложения" asp-controller="Offers" asp-action="Index" />
+    </form>
+</div>
+
+<center>
+    @{
+        <h1>Рейтинг пользователей:</h1> <br /> <br />
+        <form method="post">
+            <div style="font-size:18pt">
+
+                <input type="text" style="border-radius:5px;width:642px;font-weight:bold" placeholder="Поиск" name="searchString" />
+                <input type="submit" style="background-color:green;color:white;border-radius:5px;width:214px;font-weight:bold" value="Найти" /> <br />
+
+                <select class="sortselect" name="sortParameter" style="margin:20px 0 20px 0">
+                    <option value="position">Позиция в рейтинге</option>
+                    <option value="user">Именя пользователя</option>
+                    <option value="points">Очков</option>
+                    <option value="correctAnswers">Верных ответов</option>
+                    <option value="time">Время</option>
+                </select>
+            </div>
+        </form>
+        <br />
+        <table>
+            <thead>
+                <tr>
+                    <th>Место в рейтинге</th>
+                    <th>Всего пройдено викторин</th>
+                    <th>Пользователь</th>
+                    <th>Всего очков</th>
+                    <th>Всего верных ответов</th>
+                    <th>Всего секунд</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.PositionInRating</td>
+                            <td>@user.TotalTries</td>
+                            <td>@user.UserName</td>
+                            <td style="width:250px" class="points">@user.TotalPoints</td>
+                            <td>@user.TotalCorrectAnswers</td>
+                            <td>@user.TotalSeconds</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        }
+</center>
+
+<!--Так и не понял, так сделать плавное возрастание от 0 до значения Points. Если писать что-то такое:
+    var endValue = parseFloat(number.textContent), то число будет выдаваться округленным до int.
+    В данный момент идет до своего значения, однако криво: 6.25,5.25 в моменте, например.
+-->
+
+<script>
+    const animNums = document.querySelectorAll('.points');
+    animNums.forEach((number) => {
+        anime({
+            round: 10,
+            targets: number,
+            textContent: [0, number.textContent],
+            easing: 'linear',
+            duration: 1000,
+        });
+    });
+</script>
+

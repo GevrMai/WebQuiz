@@ -1,0 +1,25 @@
+﻿@model User
+
+<h1 style="font-size:44pt">Вход в аккаунт</h1>
+<br />
+<br />
+
+<h4 style="font-size:28pt;color:red">@ViewBag.ErrorMessage</h4>
+<br />
+<br />
+
+<form style="font-family:'Century Gothic'" asp-action="Index" asp-controller="SignIn" method="post">
+
+    <div class="container">
+
+        <label style="font-size:26pt" asp-for="Name"></label> <br />
+        <input style="font-size:26pt" type="text" asp-for="Name" placeholder="Введите имя" autocomplete="off" /> <br /> <br />
+
+        <label style="font-size:26pt" asp-for="Password"></label> <br />
+        <input style="font-size:26pt" type="password" asp-for="Password" placeholder="Введите пароль" /> <br /> <br />
+
+        <input style="font-size:26pt;background-color:cornflowerblue;color:white;border-radius:5px" type="submit" value="Войти" asp-action="Index" /> <br /> <br />
+
+    </div>
+
+</form>

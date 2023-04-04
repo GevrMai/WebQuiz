@@ -1,0 +1,44 @@
+﻿@model User
+
+<h4 style="font-size:44pt">Регистрация нового пользователя</h4>
+<br />
+<br />
+
+
+@{
+    if (ViewBag.ErrorMessage == "Пользователь успешно добавлен")
+    {
+    <h4 style="font-size:30pt;color:green">@ViewBag.ErrorMessage</h4>
+    <br />
+    <br />
+    }
+    else
+    {
+    <h4 style="font-size:28pt;color:red">@ViewBag.ErrorMessage</h4>
+    <br />
+    <br />
+    }
+}
+
+
+<form style="font-family:'Century Gothic'" asp-action="Index" asp-controller="Register" method="post">
+
+    <div class="container">
+
+        <label style="font-size:26pt" asp-for="Name"></label> <br />
+        <input style="font-size:26pt" type="text" asp-for="Name" autocomplete="off" placeholder="Введите имя" /> <br /> <br />
+
+        <label style="font-size:26pt" asp-for="Password"></label> <br />
+        <input style="font-size:26pt" type="password" asp-for="Password" placeholder="Введите пароль" /> <br /> <br />
+
+        <label style="font-size:26pt" for="ConfirmPassword">Подтвердите пароль</label> <br />
+        <input style="font-size:26pt" type="password" name="confirmPassword" placeholder="Подтвердите пароль" /> <br /> <br /> <br />
+
+
+        <input style="font-size:26pt;background-color:cornflowerblue;border-radius:5px" type="submit" value="Зарегистрироваться" asp-action="Index" /> <br /> <br />
+        
+    </div>
+
+    <div asp-validation-summary="All" style="font-size:24pt;color:red"></div>
+
+</form>

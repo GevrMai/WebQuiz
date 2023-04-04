@@ -1,0 +1,18 @@
+﻿.sidenav {
+    width: 250px;
+    position: absolute;
+    z-index: 1;
+    top: 82px;
+    left: 20px;
+    color:cornflowerblue;
+    border: dashed 3px cornflowerblue;
+    overflow-x: hidden;
+    padding: 8px 0;
+}
+
+.sidebutton {
+    background-color: green;
+    color: white;
+    font-size: 22pt;
+    border-radius: 5px
+}
