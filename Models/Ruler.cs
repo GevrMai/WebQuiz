@@ -15,25 +15,5 @@ namespace WebQuiz.Models
         public string PhotoUrl { get; set; }
         public int TimesDisplayed { get; set; }
         public int TimesGuessed { get; set; }
-
-        
-        public async static Task<List<Ruler>> RulersStatsAsync(DbContextOptions<AppDbContext> options)
-        {
-            using (AppDbContext _context = new AppDbContext(options))
-            {
-                try
-                {
-                    var rulers = await _context.rulers.Select(x => x)
-                        .OrderByDescending(x => x.TimesDisplayed)
-                        .ThenByDescending(x => x.TimesGuessed).ToListAsync();
-
-                    return rulers;
-                }
-                catch
-                {
-                    return new List<Ruler>();
-                }
-            }
-        }
     }
 }

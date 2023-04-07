@@ -17,8 +17,8 @@ namespace WebQuiz.Models.Repositories
         {
             if (entity != null)
             {
-                await _context.AddAsync(entity);
-                await _context.SaveChangesAsync();
+                 await _context.AddAsync(entity);
+                 await _context.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -29,14 +29,14 @@ namespace WebQuiz.Models.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public IQueryable<User> GetAll()
         {
-            return await _context.users.OrderByDescending(x => x.RoleId).ToListAsync();
+            return  _context.users.OrderByDescending(x => x.RoleId);
         }
 
-        public async Task<List<User>> GetAllByNameAsync(string name)
+        public IQueryable<User> GetAllByName(string name)
         {
-            return await _context.users.Where(x => x.Name == name).ToListAsync();
+            return _context.users.Where(x => x.Name == name);
         }
 
         public async Task<User> GetAsync(int id)
@@ -54,12 +54,12 @@ namespace WebQuiz.Models.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<User>> SearchUsers(string searchString)
+        public IQueryable<User> SearchedUsers(string searchString)
         {
-            return await _context.users.Where(x => x.Name.ToLower().Contains(searchString.Trim().ToLower()))
-                                                    .OrderByDescending(x => x.RoleId).ToListAsync();
+            return  _context.users.Where(x => x.Name.ToLower().Contains(searchString.Trim().ToLower()))
+                                                    .OrderByDescending(x => x.RoleId);
         }
-        public async Task<bool> AnyByName(string toFind)
+        public async Task<bool> AnyByNameAsync(string toFind)
         {
             return await _context.users.AnyAsync(x => x.Name == toFind);
         }

@@ -3,8 +3,8 @@
     public interface IUserRepository : IBaseRepository<User>
     {
         Task<User> GetByNameAsync(string name);
-        Task<List<User>> SearchUsers(string searchString);
-        Task<List<User>> GetAllByNameAsync(string name);
-        Task<bool> AnyByName(string name);
+        IQueryable<User> SearchedUsers(string searchString);
+        IQueryable<User> GetAllByName(string name);
+        Task<bool> AnyByNameAsync(string name);
     }
 }

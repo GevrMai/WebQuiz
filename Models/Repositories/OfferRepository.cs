@@ -47,9 +47,9 @@ namespace WebQuiz.Models.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<List<Offer>> GetAllAsync()
+        public IQueryable<Offer> GetAll()
         {
-            return await _context.offers.ToListAsync();
+            return _context.offers;
         }
 
         public async Task<Offer> GetByNameAsync(string name)
@@ -57,7 +57,7 @@ namespace WebQuiz.Models.Repositories
             return await _context.offers.FirstAsync(x => x.UserName == name);
         }
 
-        public async Task<int> Max()
+        public async Task<int> MaxAsync()
         {
             return await _context.offers.MaxAsync(x => x.Id);
         }

@@ -14,8 +14,6 @@ namespace WebQuiz.Models
         public double TotalPoints { get; set; }
         public int TotalSeconds { get; set; }
         public int TotalTries { get; set; }
-
-        
     }
     
 }

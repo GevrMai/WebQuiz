@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Runtime.InteropServices;
 using WebQuiz.Data;
 using WebQuiz.Models.RepositoryIntefraces;
 
@@ -24,26 +23,24 @@ namespace WebQuiz.Models.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<List<Ruler>> GetAllAsync()
+        public IQueryable<Ruler> GetAll()
         {
-            return await _context.rulers.OrderBy(x => x.RightAnswers).ToListAsync();
+            return _context.rulers.OrderBy(x => x.RightAnswers);
         }
 
-        public async Task<List<Ruler>> GetAllOrdered()
+        public IQueryable<Ruler> GetAllOrdered()
         {
-            return await _context.rulers.OrderBy(x => x.RightAnswers).ToListAsync();
+            return  _context.rulers.OrderBy(x => x.RightAnswers);
         }
 
-        public async Task<List<Ruler>> GetAllOrdered(string typeOfSort)
+        public IQueryable<Ruler> GetAllOrdered(string typeOfSort)
         {
             if (typeOfSort == "displayed")
-                return await _context.rulers.OrderByDescending(x => x.TimesDisplayed).ToListAsync();
+                return  _context.rulers.OrderByDescending(x => x.TimesDisplayed);
             else if (typeOfSort == "guessed")
-                return await _context.rulers.OrderByDescending(x => x.TimesGuessed).ToListAsync();
+                return  _context.rulers.OrderByDescending(x => x.TimesGuessed);
             else
-                return await _context.rulers.ToListAsync();
-
-            throw new NotImplementedException();
+                return  _context.rulers;
         }
 
         public async Task<Ruler> GetAsync(int id)
@@ -55,7 +52,7 @@ namespace WebQuiz.Models.Repositories
         {
             return await _context.rulers.FirstAsync(x => x.RightAnswers == key);
         }
-        public async Task<int> Count()
+        public async Task<int> CountAsync()
         {
             return await _context.rulers.CountAsync();
         }

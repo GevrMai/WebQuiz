@@ -1,12 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WebQuiz.Data;
-
-namespace WebQuiz.Models.RepositoryIntefraces
+﻿namespace WebQuiz.Models.RepositoryIntefraces
 {
     public interface IResultRepository : IBaseRepository<Result>
     {
-        Task<List<Result>> GetCurrentUserResultsAsync();
+        IQueryable<Result> GetCurrentUserResults();
         Task<List<Result>> GetTop10ResultsAsync();
-        Task<List<Result>> GetSearched(string searchString);
+        IQueryable<Result> GetSearched(string searchString);
     }
 }

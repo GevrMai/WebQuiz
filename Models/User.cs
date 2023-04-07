@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using WebQuiz.Data;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace WebQuiz.Models
 {
@@ -19,18 +17,5 @@ namespace WebQuiz.Models
         [Display(Name = "Введите пароль")]
         public string Password { get; set; }
         public int RoleId { get; set; }
-
-
-        public static float AverageCorrectAnswers { get; set; }
-        public static string AverageTime { get; set; }
-
-        
-        
-        
-
-
-        
-        
-        
     }
 }

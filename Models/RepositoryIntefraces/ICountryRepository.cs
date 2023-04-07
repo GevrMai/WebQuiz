@@ -2,8 +2,8 @@
 {
     public interface ICountryRepository : IBaseRepository<Country>
     {
-        Task<List<Country>> GetAllOrdered();
-        Task<List<Country>> GetAllOrdered(string typeOfSort);
+        IQueryable<Country> GetAllOrdered();
+        IQueryable<Country> GetAllOrdered(string typeOfSort);
         Task<Country> GetAsync(string key);
         Task<int> Count();
     }

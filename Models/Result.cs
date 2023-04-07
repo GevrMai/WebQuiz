@@ -111,18 +111,5 @@ namespace WebQuiz.Models
                 catch { }
             }
         }
-
-        public async static Task<List<Result>> GetTop10ResultsAsync(DbContextOptions<AppDbContext> options)
-        {
-            AppDbContext _context = new AppDbContext(options);
-
-            var topResults = await (from result in _context.results
-                                join user in _context.users
-                                on result.UserName equals user.Name
-                                select result).OrderByDescending(x => x.CorrectAnswers).ThenBy(x => x.Time).Take(10).ToListAsync();
-
-            _context.Dispose();
-            return topResults;
-        }
     }
 }

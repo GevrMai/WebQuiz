@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-using WebQuiz.Data;
 using WebQuiz.Models.RepositoryIntefraces;
-using static WebQuiz.Models.QuizState;
 
 namespace WebQuiz.Models.Service
 {
@@ -54,7 +52,7 @@ namespace WebQuiz.Models.Service
                 try
                 {
                     int id = 0;
-                    try { id = await offerRepository.Max(); }
+                    try { id = await offerRepository.MaxAsync(); }
                     catch { }
                     Offer offer = new Offer()
                     {
@@ -77,7 +75,7 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                var userResults = await resultRepository.GetCurrentUserResultsAsync();
+                var userResults = resultRepository.GetCurrentUserResults().ToListAsync().Result;
                 await AverageMetrics.CountMetricsAsync(1, userResults);
                 return userResults;
             }
@@ -111,7 +109,7 @@ namespace WebQuiz.Models.Service
             {
                 try
                 {
-                    List<User> users = await userRepository.GetAllAsync();
+                    List<User> users = await userRepository.GetAll().ToListAsync();
                     return users;
                 }
                 catch
@@ -129,12 +127,12 @@ namespace WebQuiz.Models.Service
                 {
                     if (searchString != null)
                     {
-                        var users = await userRepository.SearchUsers(searchString);
+                        var users = await userRepository.SearchedUsers(searchString).ToListAsync();
                         return users;
                     }
                     else
                     {
-                        var users = await userRepository.GetAllAsync();
+                        var users = await userRepository.GetAll().ToListAsync();
                         return users;
                     }
 
@@ -163,7 +161,8 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                var statistics = await resultRepository.GetAllAsync();
+                //var statistics = await resultRepository.GetAllAsync();
+                var statistics = resultRepository.GetAll().ToListAsync().Result;
 
                 await AverageMetrics.CountMetricsAsync(0, statistics);
 
@@ -177,63 +176,65 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                List<Result>? results;
+                IQueryable<Result>? results;
                 if (!string.IsNullOrEmpty(searchString))
-                    results = await resultRepository.GetSearched(searchString);
+                    results = resultRepository.GetSearched(searchString);
                 else
-                    results = await resultRepository.GetAllAsync();
+                    results = resultRepository.GetAll();
 
                 if (firstSortParameter == "user" && secondSortParameter == "time")
-                    results = results.OrderBy(x => x.UserName).ThenBy(x => x.Time).ToList();
+                    results = results.OrderBy(x => x.UserName).ThenBy(x => x.Time);
 
                 else if (firstSortParameter == "user" && secondSortParameter == "correctAnswers")
-                    results = results.OrderBy(x => x.UserName).ThenByDescending(x => x.CorrectAnswers).ToList();
+                    results = results.OrderBy(x => x.UserName).ThenByDescending(x => x.CorrectAnswers);
 
                 else if (firstSortParameter == "user" && secondSortParameter == "points")
-                    results = results.OrderBy(x => x.UserName).ThenByDescending(x => x.Points).ToList();
+                    results = results.OrderBy(x => x.UserName).ThenByDescending(x => x.Points);
 
                 else if (firstSortParameter == "correctAnswers" && secondSortParameter == "user")
-                    results = results.OrderByDescending(x => x.CorrectAnswers).ThenBy(x => x.UserName).ToList();
+                    results = results.OrderByDescending(x => x.CorrectAnswers).ThenBy(x => x.UserName);
 
                 else if (firstSortParameter == "correctAnswers" && secondSortParameter == "points")
-                    results = results.OrderByDescending(x => x.CorrectAnswers).ThenByDescending(x => x.Points).ToList();
+                    results = results.OrderByDescending(x => x.CorrectAnswers).ThenByDescending(x => x.Points);
 
                 else if (firstSortParameter == "correctAnswers" && secondSortParameter == "time")
-                    results = results.OrderByDescending(x => x.CorrectAnswers).ThenBy(x => x.Time).ToList();
+                    results = results.OrderByDescending(x => x.CorrectAnswers).ThenBy(x => x.Time);
 
                 else if (firstSortParameter == "time" && secondSortParameter == "correctAnswers")
-                    results = results.OrderBy(x => x.Time).ThenByDescending(x => x.CorrectAnswers).ToList();
+                    results = results.OrderBy(x => x.Time).ThenByDescending(x => x.CorrectAnswers);
 
                 else if (firstSortParameter == "time" && secondSortParameter == "points")
-                    results = results.OrderBy(x => x.Time).ThenByDescending(x => x.Points).ToList();
+                    results = results.OrderBy(x => x.Time).ThenByDescending(x => x.Points);
 
                 else if (firstSortParameter == "time" && secondSortParameter == "user")
-                    results = results.OrderBy(x => x.Time).ThenBy(x => x.UserName).ToList();
+                    results = results.OrderBy(x => x.Time).ThenBy(x => x.UserName);
 
                 else if (firstSortParameter == "points" && secondSortParameter == "time")
-                    results = results.OrderByDescending(x => x.Points).ThenBy(x => x.Time).ToList();
+                    results = results.OrderByDescending(x => x.Points).ThenBy(x => x.Time);
 
                 else if (firstSortParameter == "points" && secondSortParameter == "correctAnswers")
-                    results = results.OrderByDescending(x => x.Points).ThenByDescending(x => x.CorrectAnswers).ToList();
+                    results = results.OrderByDescending(x => x.Points).ThenByDescending(x => x.CorrectAnswers);
 
                 else if (firstSortParameter == "points" && secondSortParameter == "user")
-                    results = results.OrderByDescending(x => x.Points).ThenBy(x => x.UserName).ToList();
+                    results = results.OrderByDescending(x => x.Points).ThenBy(x => x.UserName);
 
                 else if (firstSortParameter == "time")
-                    results = results.OrderBy(x => x.Time).ToList();
+                    results = results.OrderBy(x => x.Time);
 
                 else if (firstSortParameter == "user")
-                    results = results.OrderBy(x => x.UserName).ToList();
+                    results = results.OrderBy(x => x.UserName);
 
                 else if (firstSortParameter == "correctAnswers")
-                    results = results.OrderByDescending(x => x.CorrectAnswers).ToList();
+                    results = results.OrderByDescending(x => x.CorrectAnswers);
 
                 else if (firstSortParameter == "points")
-                    results = results.OrderByDescending(x => x.Points).ToList();
+                    results = results.OrderByDescending(x => x.Points);
 
-                await AverageMetrics.CountMetricsAsync(0, results);
+                var listResults = await results.ToListAsync();
 
-                return results;
+                await AverageMetrics.CountMetricsAsync(0, listResults);
+
+                return listResults;
             }
             catch { return new List<Result>(); }
         }
@@ -244,7 +245,7 @@ namespace WebQuiz.Models.Service
                 List<UserRating> usersRating = new();
                 List<string> addedUsers = new();
 
-                var results = await resultRepository.GetAllAsync();
+                var results = resultRepository.GetAll();
                 foreach (var result in results)
                 {
                     var splittedTime = result.Time.Split(":");  // разбитая строка со временем. Было "1:6", стало ["1", "6"]. Далее переведем это в секунды
@@ -307,13 +308,13 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                List<Country> countries;
+                IQueryable<Country> countries;
                 if (sortParameter == "name")
-                    countries = await countryRepository.GetAllOrdered();
+                    countries = countryRepository.GetAllOrdered();
                 else if (sortParameter == "percent")
                 {
                     Dictionary<string, double> countryPercent = new Dictionary<string, double>(); // страна - процент верных ответов
-                    foreach (var country in await countryRepository.GetAllAsync())
+                    foreach (var country in await countryRepository.GetAll().ToListAsync())
                     {
                         if (country.TimesDisplayed == 0)            // избегаем деления на 0, вручную ставим 0
                             countryPercent.Add(country.RightAnswers, 0.0);
@@ -337,13 +338,14 @@ namespace WebQuiz.Models.Service
 
                 }
                 else
-                    countries = await countryRepository.GetAllOrdered(sortParameter);
+                    countries = countryRepository.GetAllOrdered(sortParameter);
 
-
+                
                 if (searchString != null)
-                    countries = countries.Select(x => x).Where(x => x.RightAnswers.Contains(searchString.Trim().ToLower())).ToList();
-
-                return countries;
+                    countries = countries.Where(x => x.RightAnswers.Contains(searchString.Trim().ToLower()));
+                
+                var countriesList = await countries.ToListAsync();
+                return countriesList;
             }
             catch
             {
@@ -354,14 +356,14 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                List<Ruler> rulers;
+                IQueryable<Ruler> rulers;
                 if (sortParameter == "name")
-                    rulers = await rulerRepository.GetAllOrdered();
+                    rulers = rulerRepository.GetAllOrdered();
 
                 else if (sortParameter == "percent")
                 {
                     Dictionary<string, double> rulersPercent = new Dictionary<string, double>(); // правитель - процент верных ответов
-                    foreach (var ruler in await rulerRepository.GetAllAsync())
+                    foreach (var ruler in rulerRepository.GetAll())
                     {
                         if (ruler.TimesDisplayed == 0)            // избегаем деления на 0, вручную ставим 0
                             rulersPercent.Add(ruler.RightAnswers, 0.0);
@@ -376,8 +378,7 @@ namespace WebQuiz.Models.Service
                     {
                         sortedRulers.Add(await rulerRepository.GetAsync(ruler.Key));
                     }
-                    //if (searchString != null)
-                    //    sortedRulers = sortedRulers.Where(x => x.RightAnswers.Split("/").Contains(searchString.Trim().ToLower())).ToList();
+
                     if (searchString != null)
                         sortedRulers = sortedRulers.Select(x => x).Where(x =>
                                                 x.RightAnswers.Contains(searchString.Trim().ToLower())).ToList();
@@ -386,12 +387,13 @@ namespace WebQuiz.Models.Service
 
                 }
                 else
-                    rulers = await rulerRepository.GetAllOrdered(searchString);
+                    rulers = rulerRepository.GetAllOrdered(searchString);
 
                 if (searchString != null)
-                    rulers = rulers.Select(x => x).Where(x => x.RightAnswers.Contains(searchString.Trim().ToLower())).ToList();
+                    rulers = rulers.Select(x => x).Where(x => x.RightAnswers.Contains(searchString.Trim().ToLower()));
 
-                return rulers;
+                var rulersList = await rulers.ToListAsync();
+                return rulersList;
             }
             catch
             {
@@ -402,8 +404,8 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                List<User>? users = await userRepository.GetAllByNameAsync(user.Name);
-                if (users.Count == 0)
+                IQueryable<User>? users = userRepository.GetAllByName(user.Name);
+                if (users.ToListAsync().Result.Count == 0)
                 {
                     User UserToAdd = new User()
                     {
@@ -430,7 +432,7 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                if (await userRepository.AnyByName(user.Name))
+                if (await userRepository.AnyByNameAsync(user.Name))
                 {
                     
                     if (userRepository.GetByNameAsync(user.Name).Result.Password == PasswordHasher.HashPassword(user.Password))

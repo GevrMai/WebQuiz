@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NPOI.SS.Formula.Functions;
-using System.Diagnostics.Metrics;
 using WebQuiz.Data;
 using WebQuiz.Models.RepositoryIntefraces;
 
@@ -23,24 +21,24 @@ namespace WebQuiz.Models.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<List<Country>> GetAllAsync()
+        public IQueryable<Country> GetAll()
         {
-            return await _context.countries.OrderBy(x => x.RightAnswers).ToListAsync();
+            return _context.countries.OrderBy(x => x.RightAnswers);
         }
 
-        public async Task<List<Country>> GetAllOrdered()
+        public IQueryable<Country> GetAllOrdered()
         {
-            return await _context.countries.OrderBy(x => x.RightAnswers).ToListAsync(); 
+            return _context.countries.OrderBy(x => x.RightAnswers); 
         }
 
-        public async Task<List<Country>> GetAllOrdered(string typeOfSort)
+        public IQueryable<Country> GetAllOrdered(string typeOfSort)
         {
             if (typeOfSort == "displayed")
-                return await _context.countries.OrderByDescending(x => x.TimesDisplayed).ToListAsync();
+                return  _context.countries.OrderByDescending(x => x.TimesDisplayed);
             else if (typeOfSort == "guessed")
-                return await _context.countries.OrderByDescending(x => x.TimesGuessed).ToListAsync();
+                return  _context.countries.OrderByDescending(x => x.TimesGuessed);
             else
-                return await _context.countries.ToListAsync();
+                return _context.countries.OrderBy(x => x.RightAnswers);
         }
 
         public async Task<Country> GetAsync(string key)

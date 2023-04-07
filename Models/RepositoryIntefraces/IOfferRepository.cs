@@ -3,6 +3,6 @@
     public interface IOfferRepository : IBaseRepository<Offer>
     {
         Task<Offer> GetByNameAsync(string name);
-        Task<int> Max();
+        Task<int> MaxAsync();
     }
 }

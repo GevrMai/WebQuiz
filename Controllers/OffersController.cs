@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebQuiz.Models;
 using WebQuiz.Models.RepositoryIntefraces;
 using WebQuiz.Models.Service;
@@ -20,7 +21,7 @@ namespace WebQuiz.Controllers
         {
             try
             {
-                List<Offer> offers = repository.GetAllAsync().Result.OrderByDescending(x => x.CreatedDate).ToList();
+                List<Offer> offers = repository.GetAll().ToListAsync().Result.OrderByDescending(x => x.CreatedDate).ToList();
 
                 ViewBag.UserRoles = await service.GetRolesOfUsersAsync(offers); // модераторы могут удалять комментарии
                 return View(offers);

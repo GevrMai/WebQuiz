@@ -23,10 +23,10 @@ namespace WebQuiz.Models.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<List<Result>> GetAllAsync()
+        public IQueryable<Result> GetAll()
         {
-            return await _context.results.OrderByDescending(x => x.Points)
-                    .ThenByDescending(x => x.CorrectAnswers).ToListAsync();
+            return _context.results.OrderByDescending(x => x.Points)
+                    .ThenByDescending(x => x.CorrectAnswers);
         }
 
         public Task<Result> GetAsync(int id)
@@ -34,10 +34,10 @@ namespace WebQuiz.Models.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<List<Result>> GetCurrentUserResultsAsync()
+        public IQueryable<Result> GetCurrentUserResults()
         {
-            return await _context.results.Where(x => x.UserName == CurrentUser._CurrentUser.Name)
-                                       .OrderByDescending(x => x.Points).ThenBy(x => x.Time).ToListAsync();
+            return _context.results.Where(x => x.UserName == CurrentUser._CurrentUser.Name)
+                                       .OrderByDescending(x => x.Points).ThenBy(x => x.Time);
         }
 
         public async Task SaveChangesAsync()
@@ -54,9 +54,9 @@ namespace WebQuiz.Models.Repositories
             return topResults;
         }
 
-        public async Task<List<Result>> GetSearched(string searchString)
+        public IQueryable<Result> GetSearched(string searchString)
         {
-            return await _context.results.Where(x => x.UserName.ToLower().Contains(searchString.ToLower())).ToListAsync();
+            return _context.results.Where(x => x.UserName.ToLower().Contains(searchString.ToLower()));
         }
     }
 }

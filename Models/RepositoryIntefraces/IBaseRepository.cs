@@ -6,7 +6,7 @@
 
         Task<T> GetAsync(int id);
 
-        Task<List<T>> GetAllAsync();
+        IQueryable<T> GetAll();
 
         Task<bool> DeleteAsync(int id);
         Task SaveChangesAsync();
