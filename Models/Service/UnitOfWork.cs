@@ -19,13 +19,17 @@ namespace WebQuiz.Models.Service
         private RulerRepository? rulerRepository;
         private UserRepository? userRepository;
 
+        private static readonly object lockThread = new object();
         public CountryRepository Country
         {
             get
             {
-                if (countryRepository == null)
-                    countryRepository = new CountryRepository(options);
-                return countryRepository;
+                lock(lockThread)
+                {
+                    if (countryRepository == null)
+                        countryRepository = new CountryRepository(options);
+                    return countryRepository;
+                }
             }
         }
 
@@ -33,36 +37,48 @@ namespace WebQuiz.Models.Service
         {
             get
             {
-                if (offerRepository == null)
-                    offerRepository = new OfferRepository(options);
-                return offerRepository;
+                lock (lockThread)
+                {
+                    if (offerRepository == null)
+                        offerRepository = new OfferRepository(options);
+                    return offerRepository;
+                }
             }
         }
         public ResultRepository Result
         {
             get
             {
-                if (resultRepository == null)
-                    resultRepository = new ResultRepository(options);
-                return resultRepository;
+                lock (lockThread)
+                {
+                    if (resultRepository == null)
+                        resultRepository = new ResultRepository(options);
+                    return resultRepository;
+                }
             }
         }
         public RulerRepository Ruler
         {
             get
             {
-                if (rulerRepository == null)
-                    rulerRepository = new RulerRepository(options);
-                return rulerRepository;
+                lock (lockThread)
+                {
+                    if (rulerRepository == null)
+                        rulerRepository = new RulerRepository(options);
+                    return rulerRepository;
+                }
             }
         }
         public UserRepository User
         {
             get
             {
-                if (userRepository == null)
-                    userRepository = new UserRepository(options);
-                return userRepository;
+                lock (lockThread)
+                {
+                    if (userRepository == null)
+                        userRepository = new UserRepository(options);
+                    return userRepository;
+                }
             }
         }
 
