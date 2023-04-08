@@ -10,9 +10,21 @@
             </form>
 
             <div >
-
-                <img src="@QuizState.PhotoUrls.ToList()[QuizState.CurrentQuestionIndex]" oncontextmenu="return false"
-                     style="width:780px;height:440px;border:solid;border-color:black;" /> <br />
+                @{
+                    try        // предотвращение бага, который пока сложно отловить ( один раз в большое кол-во прохождений викторин массив выходить за)    
+                               // границы. В Модели все работает, ошибка появляется здесь
+                    {
+                        <img src="@QuizState.PhotoUrls.ToList()[QuizState.CurrentQuestionIndex]" oncontextmenu="return false"
+                            style="width:780px;height:440px;border:solid;border-color:black;" /> <br />
+                    }
+                    catch
+                    {
+                        QuizState.CurrentQuestionIndex = 0;
+                        <img src="@QuizState.PhotoUrls.ToList()[QuizState.CurrentQuestionIndex]" oncontextmenu="return false"
+                            style="width:780px;height:440px;border:solid;border-color:black;" /> <br />
+                    }
+                }
+                
 
                 <p style="font-size:22pt">Текущий вопрос: @(QuizState.CurrentQuestionIndex+1) / 10</p>
 

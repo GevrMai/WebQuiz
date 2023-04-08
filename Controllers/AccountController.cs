@@ -15,7 +15,7 @@ namespace WebQuiz.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string errorMessage = null)
+        public async Task<IActionResult> Index(string? errorMessage = null)
         {
             if (CurrentUser._CurrentUser == null)
                 return RedirectToAction("Index", "Home", new { authorized = false });

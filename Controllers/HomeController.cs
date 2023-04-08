@@ -106,15 +106,15 @@ namespace WebQuiz.Controllers
         }
         // переход на страницу с рейтингом игроков
         [HttpGet]
-        public async Task<IActionResult> Players()
+        public IActionResult Players()
         {
-            return View(await service.FormUserRatingAsync());
+            return View(service.FormUserRating());
         }
         //выполняется поиск и сортировка
         [HttpPost]
-        public async Task<IActionResult> Players(string searchString, string sortParameter)
+        public IActionResult Players(string searchString, string sortParameter)
         {
-            return View(await service.FormUserRatingAsync(searchString, sortParameter));
+            return View(service.FormUserRating(searchString, sortParameter));
         }
         //переход на страницу со статистикой стран
         [HttpGet]

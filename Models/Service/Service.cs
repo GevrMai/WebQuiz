@@ -1,28 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-using WebQuiz.Models.RepositoryIntefraces;
+using WebQuiz.Data;
 
 namespace WebQuiz.Models.Service
 {
     public class Service : IService
     {
-        private readonly IOfferRepository offerRepository;
-        private readonly IUserRepository userRepository;
-        private readonly IResultRepository resultRepository;
-        private readonly ICountryRepository countryRepository;
-        private readonly IRulerRepository rulerRepository;
-        public Service(
-            IOfferRepository offerRepository,
-            IUserRepository userRepository,
-            IResultRepository resultRepository,
-            ICountryRepository countryRepository,
-            IRulerRepository rulerRepository)
+        private readonly UnitOfWork uow;
+        public Service(DbContextOptions<AppDbContext> options)
         {
-            this.offerRepository = offerRepository;
-            this.userRepository = userRepository;
-            this.resultRepository = resultRepository;
-            this.countryRepository = countryRepository;
-            this.rulerRepository = rulerRepository;
+            uow = new UnitOfWork(options);
         }
         public async Task<List<int>> GetRolesOfUsersAsync(List<Offer> offers)
         {
@@ -32,7 +19,7 @@ namespace WebQuiz.Models.Service
             {
                 try        // предложение оставлено пол-ем, который есть в БД
                 {
-                    var user = await userRepository.GetByNameAsync(offer.UserName);
+                    var user = await uow.User.GetByNameAsync(offer.UserName);
                     id = user.RoleId;
                 }
                 catch       // предложение оставлено пользователем, который удален 
@@ -52,7 +39,8 @@ namespace WebQuiz.Models.Service
                 try
                 {
                     int id = 0;
-                    try { id = await offerRepository.MaxAsync(); }
+
+                    try { id = id = await uow.Offer.MaxAsync(); }
                     catch { }
                     Offer offer = new Offer()
                     {
@@ -63,8 +51,8 @@ namespace WebQuiz.Models.Service
                         UserRole = CurrentUser._CurrentUser.RoleId,
                     };
 
-                    await offerRepository.CreateAsync(offer);
-                    await offerRepository.SaveChangesAsync();
+                    await uow.Offer.CreateAsync(offer);
+                    await uow.SaveAsync();
                 }
                 catch
                 { }
@@ -75,7 +63,7 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                var userResults = resultRepository.GetCurrentUserResults().ToListAsync().Result;
+                var userResults = uow.Result.GetCurrentUserResults().ToListAsync().Result;
                 await AverageMetrics.CountMetricsAsync(1, userResults);
                 return userResults;
             }
@@ -90,13 +78,13 @@ namespace WebQuiz.Models.Service
             {
                 newPassword = newPassword.Trim();
                 newPasswordConfirm = newPasswordConfirm.Trim();
-                var user = await userRepository.GetByNameAsync(CurrentUser._CurrentUser.Name);
+                var user = await uow.User.GetByNameAsync(CurrentUser._CurrentUser.Name);
                 if (user != null)
                 {
                     user.Password = PasswordHasher.HashPassword(newPassword);
                     CurrentUser._CurrentUser.Password = PasswordHasher.HashPassword(newPassword);
                 }
-                await userRepository.SaveChangesAsync();
+                await uow.SaveAsync();
             }
             else
             {
@@ -109,7 +97,7 @@ namespace WebQuiz.Models.Service
             {
                 try
                 {
-                    List<User> users = await userRepository.GetAll().ToListAsync();
+                    List<User> users = await uow.User.GetAll().ToListAsync();
                     return users;
                 }
                 catch
@@ -127,12 +115,12 @@ namespace WebQuiz.Models.Service
                 {
                     if (searchString != null)
                     {
-                        var users = await userRepository.SearchedUsers(searchString).ToListAsync();
+                        var users = await uow.User.SearchedUsers(searchString).ToListAsync();
                         return users;
                     }
                     else
                     {
-                        var users = await userRepository.GetAll().ToListAsync();
+                        var users = await uow.User.GetAll().ToListAsync();
                         return users;
                     }
 
@@ -148,9 +136,9 @@ namespace WebQuiz.Models.Service
             {
                 try
                 {
-                    var user = await userRepository.GetAsync(userId);
+                    var user = await uow.User.GetAsync(userId);
                     user.RoleId = newRole;
-                    await userRepository.SaveChangesAsync();
+                    await uow.SaveAsync();
                     return true;
                 }
                 catch { }
@@ -161,8 +149,7 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                //var statistics = await resultRepository.GetAllAsync();
-                var statistics = resultRepository.GetAll().ToListAsync().Result;
+                var statistics = uow.Result.GetAll().ToListAsync().Result;
 
                 await AverageMetrics.CountMetricsAsync(0, statistics);
 
@@ -178,9 +165,9 @@ namespace WebQuiz.Models.Service
             {
                 IQueryable<Result>? results;
                 if (!string.IsNullOrEmpty(searchString))
-                    results = resultRepository.GetSearched(searchString);
+                    results = uow.Result.GetSearched(searchString);
                 else
-                    results = resultRepository.GetAll();
+                    results = uow.Result.GetAll();
 
                 if (firstSortParameter == "user" && secondSortParameter == "time")
                     results = results.OrderBy(x => x.UserName).ThenBy(x => x.Time);
@@ -238,14 +225,14 @@ namespace WebQuiz.Models.Service
             }
             catch { return new List<Result>(); }
         }
-        public async Task<List<UserRating>> FormUserRatingAsync(string searchString = null, string sortParameter = null)
+        public List<UserRating> FormUserRating(string searchString = null, string sortParameter = null)
         {
             try
             {
                 List<UserRating> usersRating = new();
                 List<string> addedUsers = new();
 
-                var results = resultRepository.GetAll();
+                var results = uow.Result.GetAll();
                 foreach (var result in results)
                 {
                     var splittedTime = result.Time.Split(":");  // разбитая строка со временем. Было "1:6", стало ["1", "6"]. Далее переведем это в секунды
@@ -310,11 +297,11 @@ namespace WebQuiz.Models.Service
             {
                 IQueryable<Country> countries;
                 if (sortParameter == "name")
-                    countries = countryRepository.GetAllOrdered();
+                    countries = uow.Country.GetAllOrdered();
                 else if (sortParameter == "percent")
                 {
                     Dictionary<string, double> countryPercent = new Dictionary<string, double>(); // страна - процент верных ответов
-                    foreach (var country in await countryRepository.GetAll().ToListAsync())
+                    foreach (var country in await uow.Country.GetAll().ToListAsync())
                     {
                         if (country.TimesDisplayed == 0)            // избегаем деления на 0, вручную ставим 0
                             countryPercent.Add(country.RightAnswers, 0.0);
@@ -327,7 +314,7 @@ namespace WebQuiz.Models.Service
                     List<Country> sortedCountries = new List<Country>();    // этот список вернем в контроллер
                     foreach (var country in sortedPercents)                 // прохождение и добавление отсортированных данных
                     {
-                        sortedCountries.Add(await countryRepository.GetAsync(country.Key));
+                        sortedCountries.Add(await uow.Country.GetAsync(country.Key));
                     }
 
                     if (searchString != null)
@@ -338,7 +325,7 @@ namespace WebQuiz.Models.Service
 
                 }
                 else
-                    countries = countryRepository.GetAllOrdered(sortParameter);
+                    countries = uow.Country.GetAllOrdered(sortParameter);
 
                 
                 if (searchString != null)
@@ -358,12 +345,12 @@ namespace WebQuiz.Models.Service
             {
                 IQueryable<Ruler> rulers;
                 if (sortParameter == "name")
-                    rulers = rulerRepository.GetAllOrdered();
+                    rulers = uow.Ruler.GetAllOrdered();
 
                 else if (sortParameter == "percent")
                 {
                     Dictionary<string, double> rulersPercent = new Dictionary<string, double>(); // правитель - процент верных ответов
-                    foreach (var ruler in rulerRepository.GetAll())
+                    foreach (var ruler in uow.Ruler.GetAll())
                     {
                         if (ruler.TimesDisplayed == 0)            // избегаем деления на 0, вручную ставим 0
                             rulersPercent.Add(ruler.RightAnswers, 0.0);
@@ -376,7 +363,7 @@ namespace WebQuiz.Models.Service
                     List<Ruler> sortedRulers = new List<Ruler>();    // этот список вернем в контроллер
                     foreach (var ruler in sortedPercents)                 // прохождение и добавление отсортированных данных
                     {
-                        sortedRulers.Add(await rulerRepository.GetAsync(ruler.Key));
+                        sortedRulers.Add(await uow.Ruler.GetAsync(ruler.Key));
                     }
 
                     if (searchString != null)
@@ -387,7 +374,7 @@ namespace WebQuiz.Models.Service
 
                 }
                 else
-                    rulers = rulerRepository.GetAllOrdered(searchString);
+                    rulers = uow.Ruler.GetAllOrdered(searchString);
 
                 if (searchString != null)
                     rulers = rulers.Select(x => x).Where(x => x.RightAnswers.Contains(searchString.Trim().ToLower()));
@@ -404,7 +391,7 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                IQueryable<User>? users = userRepository.GetAllByName(user.Name);
+                IQueryable<User>? users = uow.User.GetAllByName(user.Name);
                 if (users.ToListAsync().Result.Count == 0)
                 {
                     User UserToAdd = new User()
@@ -414,8 +401,8 @@ namespace WebQuiz.Models.Service
                         RoleId = 0,                                          // по умолчанию роль 0 - default user
                     };
 
-                    await userRepository.CreateAsync(UserToAdd);
-                    await userRepository.SaveChangesAsync();
+                    await uow.User.CreateAsync(UserToAdd);
+                    await uow.SaveAsync();
                     return "Пользователь успешно добавлен";
                 }
                 else
@@ -432,12 +419,12 @@ namespace WebQuiz.Models.Service
         {
             try
             {
-                if (await userRepository.AnyByNameAsync(user.Name))
+                if (await uow.User.AnyByNameAsync(user.Name))
                 {
                     
-                    if (userRepository.GetByNameAsync(user.Name).Result.Password == PasswordHasher.HashPassword(user.Password))
+                    if (uow.User.GetByNameAsync(user.Name).Result.Password == PasswordHasher.HashPassword(user.Password))
                     {
-                        CurrentUser._CurrentUser = await userRepository.GetByNameAsync(user.Name);
+                        CurrentUser._CurrentUser = await uow.User.GetByNameAsync(user.Name);
                         return null;
                     }
                     else
@@ -454,6 +441,92 @@ namespace WebQuiz.Models.Service
             {
                 return "Произошла ошибка!";
             }
+        }
+        public async Task CheckAnswersAsync()
+        {
+            try
+            {
+                Country country = null; Ruler ruler = null;
+
+                for (int i = 0; i < 10; i++)
+                {
+                    if (QuizState.Type == QuizState.QuizType.Rulers)
+                    { 
+                        ruler = await uow.Ruler.GetAsync(QuizState._UserAnswers[i].RightAnswer);    // берем правителя из контекста для обновления данных
+                        ruler.TimesDisplayed += 1;
+                    }
+                    else
+                    {
+                        country = await uow.Country.GetAsync(QuizState._UserAnswers[i].RightAnswer); // берем страну из контекста для обновления данных
+                        country.TimesDisplayed += 1;
+                    }
+
+                    var rightAnswers = QuizState._UserAnswers[i].RightAnswer.Split("/");      // разделяем ответы
+                    if (rightAnswers.Contains(QuizState._UserAnswers[i].UserAnswer))
+                    {
+                        QuizState.CorrectAnswers += 1;
+                        QuizState._UserAnswers[i].IsCorrect = true;
+
+                        if (QuizState.Type == QuizState.QuizType.Rulers)
+                            ruler.TimesGuessed += 1;
+                        else
+                            country.TimesGuessed += 1;
+                    }
+
+                }
+
+                await uow.SaveAsync();
+                await SaveResultAsync();
+            }
+            catch { }
+
+        }
+        public async Task SaveResultAsync()
+        {
+            try
+            {
+                int id = 0;
+                try
+                {
+                    id = uow.Result.MaxIdAsync().Result + 1;
+                }
+                catch { }
+
+                double koefficient;
+                int seconds = QuizState.TotalTime.Minutes * 60 + QuizState.TotalTime.Seconds;
+                if (seconds <= 20) koefficient = 1.25;
+                else if (seconds <= 35) koefficient = 1.15;
+                else if (seconds <= 50) koefficient = 1.1;
+                else if (seconds <= 65) koefficient = 1.05;
+                else if (seconds <= 80) koefficient = 1;
+                else if (seconds <= 95) koefficient = 0.95;
+                else if (seconds <= 110) koefficient = 0.9;
+                else if (seconds <= 130) koefficient = 0.85;
+                else koefficient = 0.8;
+
+                string time;
+                if (QuizState.TotalTime.Seconds < 10)
+                    time = QuizState.TotalTime.Minutes.ToString() + ":0" + QuizState.TotalTime.Seconds.ToString();
+                else
+                    time = QuizState.TotalTime.Minutes.ToString() + ":" + QuizState.TotalTime.Seconds.ToString();
+
+                Result Result = new Result()
+                {
+                    Id = id,
+                    UserName = CurrentUser._CurrentUser.Name,
+                    CorrectAnswers = QuizState.CorrectAnswers,
+                    Time = time,
+                    Points = Math.Round(QuizState.CorrectAnswers * koefficient, 2),
+                };
+
+                QuizState.Points = Result.Points;
+
+                await uow.Result.CreateAsync(Result);
+                await uow.SaveAsync();
+
+                QuizState.ResultIsShown = true;
+            }
+            catch { }
         }
     }
 

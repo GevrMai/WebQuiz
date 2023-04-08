@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebQuiz.Data;
 using WebQuiz.Models;
+using WebQuiz.Models.Service;
 
 namespace WebQuiz.Controllers
 {
@@ -12,8 +13,9 @@ namespace WebQuiz.Controllers
         private readonly string _connectionString;
         readonly DbContextOptionsBuilder<AppDbContext> _optionsBuilder;
         private readonly ILogger logger;
+        private readonly IService service;
 
-        public QuizController(IConfiguration configuration, ILogger<QuizController> logger)
+        public QuizController(IConfiguration configuration, ILogger<QuizController> logger, IService service)
         {
             _configuration = configuration;
             _optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
@@ -21,6 +23,7 @@ namespace WebQuiz.Controllers
             _optionsBuilder.UseNpgsql(_connectionString);
 
             this.logger = logger;
+            this.service = service;
         }
 
         [HttpGet]
@@ -71,7 +74,7 @@ namespace WebQuiz.Controllers
         {
             if(!QuizState.ResultIsShown)
             {
-                await Result.CheckAnswers(_optionsBuilder.Options);
+                await service.CheckAnswersAsync();
             }
 
             return View();

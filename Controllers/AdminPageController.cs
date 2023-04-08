@@ -25,7 +25,7 @@ namespace WebQuiz.Controllers
             return RedirectToAction("Index", "Home");
         }
         [HttpPost]
-        public async Task<IActionResult> Index(string searchString = null)
+        public async Task<IActionResult> Index(string? searchString = null)
         {
             var users = service.FindUserAsync(searchString);
             if (users.Result.Count() > 0)

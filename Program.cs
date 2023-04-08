@@ -19,6 +19,7 @@ builder.Services.AddScoped<IResultRepository, ResultRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<IRulerRepository, RulerRepository>();
 builder.Services.AddScoped<IService, Service>();
+builder.Services.AddScoped<IDisposable, UnitOfWork>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

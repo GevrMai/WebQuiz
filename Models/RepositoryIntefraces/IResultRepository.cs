@@ -5,5 +5,6 @@
         IQueryable<Result> GetCurrentUserResults();
         Task<List<Result>> GetTop10ResultsAsync();
         IQueryable<Result> GetSearched(string searchString);
+        Task<int> MaxIdAsync();
     }
 }

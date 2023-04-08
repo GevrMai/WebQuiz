@@ -13,9 +13,15 @@ namespace WebQuiz.Models.Repositories
         }
 
 
-        public Task<bool> CreateAsync(Result entity)
+        public async Task<bool> CreateAsync(Result entity)
         {
-            throw new NotImplementedException();
+            if (entity != null)
+            {
+                await _context.AddAsync(entity);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public Task<bool> DeleteAsync(int id)
@@ -57,6 +63,11 @@ namespace WebQuiz.Models.Repositories
         public IQueryable<Result> GetSearched(string searchString)
         {
             return _context.results.Where(x => x.UserName.ToLower().Contains(searchString.ToLower()));
+        }
+
+        public async Task<int> MaxIdAsync()
+        {
+            return await _context.results.MaxAsync(x => x.Id);
         }
     }
 }

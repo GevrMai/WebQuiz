@@ -16,13 +16,16 @@ namespace WebQuiz.Models.Service
         public Task<List<Result>> LoadStatisticsAsync();    //Все результаты по всем пользователям
         public Task<List<Result>> LoadStatisticsAsync(
             string searchString, string firstSortParameter, string secondSortParameter);    //Все результаты учитывая поиск/сортировку
-        public Task<List<UserRating>> FormUserRatingAsync(
-            string searchString = null, string sortParameter = null);   //Страница с рейтингом польз-ей
+        public List<UserRating> FormUserRating(
+            string? searchString = null, string? sortParameter = null);   //Страница с рейтингом польз-ей
         public Task<List<Country>> CountriesStatsAsync(                 //Статистика по странам
-            string searchString = null, string sortParameter = null);
+            string? searchString = null, string? sortParameter = null);
         public Task<List<Ruler>> RulersStatsAsync(
-            string searchString = null, string sortParameter = null);   // Статистика по правителем
+            string? searchString = null, string? sortParameter = null);   // Статистика по правителем
         public Task<string> RegisterUserAsync(string confirmPassword, User user);   //Регистрация пользователя
-        public Task<string> LogInAsync(User user);  //Вход 
+        public Task<string> LogInAsync(User user);  //Вход пользователя в аккаунт
+        public Task CheckAnswersAsync();  // проверка ответов пользователя
+        public Task SaveResultAsync();    // сохранение результата
+
     }
 }
