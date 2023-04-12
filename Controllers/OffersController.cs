@@ -21,7 +21,7 @@ namespace WebQuiz.Controllers
         {
             try
             {
-                List<Offer> offers = repository.GetAll().ToListAsync().Result.OrderByDescending(x => x.CreatedDate).ToList();
+                List<Offer> offers = repository.GetAll().ToListAsync().Result.OrderByDescending(x => DateTime.Parse(x.CreatedDate)).ToList();
 
                 ViewBag.UserRoles = await service.GetRolesOfUsersAsync(offers); // модераторы могут удалять комментарии
                 return View(offers);
